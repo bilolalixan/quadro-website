@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model MenuCategory {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  nameRu    String
+  nameUz    String
+  nameEn    String
+  order     Int        @default(0)
+  items     MenuItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model MenuItem {
+  id            String       @id @default(cuid())
+  category      MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId    String
+  nameRu        String
+  nameUz        String
+  nameEn        String
+  descriptionRu String?
+  descriptionUz String?
+  descriptionEn String?
+  priceSum      Int
+  unit          String?
+  imageUrl      String?
+  order         Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([categoryId])
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  titleRu       String
+  titleUz       String
+  titleEn       String
+  descriptionRu String?
+  descriptionUz String?
+  descriptionEn String?
+  imageUrl      String?
+  date          DateTime?
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  category  String   @default("upcoming") // "upcoming" | "past"
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  name       String
+  phone      String
+  email      String?
+  partySize  Int
+  date       DateTime
+  time       String
+  comment    String?
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model EventInquiry {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  description String?
+  createdAt   DateTime @default(now())
+}
